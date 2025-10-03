@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Layout } from "./components/layouts/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
@@ -52,6 +52,10 @@ const App = () => (
             <Route path="/runs" element={<Layout><RunsPage /></Layout>} />
             <Route path="/agents" element={<Layout><AgentsLibrary /></Layout>} />
             <Route path="/workflow/:id" element={<Layout><WorkflowDetail /></Layout>} />
+            
+            {/* Redirects for backward compatibility */}
+            <Route path="/market-sizing" element={<Navigate to="/market-research" replace />} />
+            <Route path="/offer-packaging" element={<Navigate to="/offer-design" replace />} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

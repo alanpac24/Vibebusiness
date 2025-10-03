@@ -1,14 +1,7 @@
-import { WorkflowPage } from "@/components/features/WorkflowPage";
+import { OfferDesignWorkflow } from "@/components/features/offer-design/OfferDesignWorkflow";
 
 const OfferDesign = () => {
-  return (
-    <WorkflowPage
-      workflowType="offer-design"
-      title="Offer Design & Packaging"
-      description="Prioritize your MVP features, design product tiers, and create risk-reversal strategies"
-      exampleCommand="Design my product offering and packaging tiers"
-    />
-  );
+  return <OfferDesignWorkflow />;
 };
 
 export default OfferDesign;

@@ -1,14 +1,7 @@
-import { WorkflowPage } from "@/components/features/WorkflowPage";
+import { MarketResearchWorkflow } from "@/components/features/market-research/MarketResearchWorkflow";
 
 const MarketResearch = () => {
-  return (
-    <WorkflowPage
-      workflowType="market-research"
-      title="Market Research & Insights"
-      description="Size your addressable market, map your competitive landscape, and create a customer research plan"
-      exampleCommand="Research the market for my B2B SaaS tool"
-    />
-  );
+  return <MarketResearchWorkflow />;
 };
 
 export default MarketResearch;

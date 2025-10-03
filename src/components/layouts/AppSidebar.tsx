@@ -131,9 +131,14 @@ export function AppSidebar() {
                             isActive={isActive(workflow.path)}
                             className="h-8 pl-7 text-xs"
                           >
-                            <NavLink to={workflow.path} className="flex items-center gap-2">
+                            <NavLink to={workflow.path} className="flex items-center gap-2 w-full">
                               <span className="text-xs">{workflow.emoji}</span>
-                              <span>{workflow.title}</span>
+                              <span className="flex-1">{workflow.title}</span>
+                              {workflow.hasAIAgent && (
+                                <span className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary rounded-full">
+                                  AI
+                                </span>
+                              )}
                             </NavLink>
                           </SidebarMenuButton>
                         </SidebarMenuItem>

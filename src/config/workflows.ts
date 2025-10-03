@@ -10,7 +10,8 @@ export const workflowCategories: WorkflowCategory[] = [
         title: "Idea Refiner",
         description: "Clarify and validate your idea",
         emoji: "💡",
-        path: "/idea-refiner"
+        path: "/idea-refiner",
+        hasAIAgent: true
       },
       {
         type: "mvp-diagnostic",
@@ -60,11 +61,12 @@ export const workflowCategories: WorkflowCategory[] = [
     title: "Market",
     workflows: [
       {
-        type: "market-sizing",
-        title: "Market Size",
+        type: "market-research",
+        title: "Market Research",
         description: "TAM/SAM/SOM analysis",
         emoji: "📊",
-        path: "/market-sizing"
+        path: "/market-research",
+        hasAIAgent: true
       },
       {
         type: "competitor-analysis",
@@ -85,14 +87,16 @@ export const workflowCategories: WorkflowCategory[] = [
         title: "Pricing Strategy",
         description: "Set pricing model",
         emoji: "💰",
-        path: "/pricing-strategy"
+        path: "/pricing-strategy",
+        hasAIAgent: true
       },
       {
-        type: "offer-packaging",
-        title: "Price Tiers",
-        description: "Create packages",
+        type: "offer-design",
+        title: "Offer Design",
+        description: "Design value props & packages",
         emoji: "📦",
-        path: "/offer-packaging"
+        path: "/offer-design",
+        hasAIAgent: true
       },
       {
         type: "revenue-simulator",

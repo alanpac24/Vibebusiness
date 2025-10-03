@@ -102,6 +102,7 @@ export const Dashboard = () => {
                   description={workflow.description}
                   path={workflow.path}
                   emoji={workflow.emoji}
+                  hasAIAgent={workflow.hasAIAgent}
                 />
               ))}
             </div>

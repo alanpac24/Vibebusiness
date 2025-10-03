@@ -4,6 +4,7 @@ export interface Workflow {
   description: string;
   emoji: string;
   path: string;
+  hasAIAgent?: boolean;
 }
 
 export interface WorkflowCategory {
