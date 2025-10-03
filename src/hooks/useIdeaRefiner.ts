@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useBusinessContext } from '@/hooks/useBusinessContext';
 import { IdeaRefinerInput, IdeaRefinerOutput, DiagnosticQuestion } from '@/types/idea-refiner';
 
 // Default diagnostic questions
@@ -60,6 +61,7 @@ const defaultDiagnosticQuestions: Omit<DiagnosticQuestion, 'answer'>[] = [
 export const useIdeaRefiner = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
+  const { businessContext, saveAgentOutput, saveContext } = useBusinessContext();
 
   const processIdea = async (input: IdeaRefinerInput): Promise<IdeaRefinerOutput | null> => {
     setIsProcessing(true);
@@ -154,6 +156,17 @@ export const useIdeaRefiner = () => {
       toast({
         title: "Analysis Started",
         description: "Your idea is being analyzed. This may take a few moments.",
+      });
+
+      // Save the output to business context
+      await saveAgentOutput('idea-refiner', mockOutput, {
+        companyProfile: {
+          ...businessContext?.companyProfile,
+          businessIdea: input.ideaDescription,
+          problemStatement: mockOutput.diagnosticAnswers[0]?.answer || '',
+          valueProposition: mockOutput.valueProposition?.headline || '',
+          targetMarket: mockOutput.customerSegments?.[0]?.description || ''
+        }
       });
 
       return mockOutput;

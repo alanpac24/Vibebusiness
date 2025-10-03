@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download, Maximize2, Grid3X3 } from 'lucide-react';
-import { LeanCanvas, BusinessModelCanvas } from '@/types/idea-refiner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Download, Maximize2, Grid3X3, Lightbulb, Users, Target, AlertTriangle, TrendingUp } from 'lucide-react';
+import { LeanCanvas, BusinessModelCanvas, CustomerSegment, ValueProposition, ProblemSolutionFit, RiskAssumption } from '@/types/idea-refiner';
 
 interface CanvasViewerProps {
   leanCanvas: LeanCanvas;
   businessModelCanvas?: BusinessModelCanvas;
+  customerSegments?: CustomerSegment[];
+  valueProposition?: ValueProposition;
+  problemSolutionFit?: ProblemSolutionFit;
+  risks?: RiskAssumption[];
 }
 
 const LeanCanvasGrid = ({ canvas }: { canvas: LeanCanvas }) => {
@@ -208,13 +213,21 @@ const BusinessCanvasGrid = ({ canvas }: { canvas: BusinessModelCanvas }) => {
   );
 };
 
-export const CanvasViewer = ({ leanCanvas, businessModelCanvas }: CanvasViewerProps) => {
+export const CanvasViewer = ({ 
+  leanCanvas, 
+  businessModelCanvas,
+  customerSegments,
+  valueProposition,
+  problemSolutionFit,
+  risks
+}: CanvasViewerProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [activeTab, setActiveTab] = useState('context');
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Business Canvas</h2>
+        <h2 className="text-2xl font-semibold">Business Analysis & Canvas</h2>
         <Button
           variant="outline"
           size="sm"
@@ -225,6 +238,105 @@ export const CanvasViewer = ({ leanCanvas, businessModelCanvas }: CanvasViewerPr
         </Button>
       </div>
 
+      {/* Context and Analysis Section */}
+      <div className="space-y-6">
+        {/* Key Insights Summary */}
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-primary" />
+              Analysis Overview
+            </CardTitle>
+            <CardDescription>
+              AI-generated insights based on your idea and diagnostic responses
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Value Proposition Summary */}
+            {valueProposition && (
+              <Alert className="border-blue-200 bg-blue-50">
+                <TrendingUp className="h-4 w-4" />
+                <AlertDescription className="space-y-2">
+                  <p className="font-semibold">Core Value Proposition:</p>
+                  <p>{valueProposition.headline}</p>
+                  <p className="text-sm text-muted-foreground">{valueProposition.subheadline}</p>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Target Customers Summary */}
+            {customerSegments && customerSegments.length > 0 && (
+              <Alert className="border-green-200 bg-green-50">
+                <Users className="h-4 w-4" />
+                <AlertDescription className="space-y-2">
+                  <p className="font-semibold">Primary Target Segments:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {customerSegments.slice(0, 3).map((segment) => (
+                      <li key={segment.id} className="text-sm">
+                        <span className="font-medium">{segment.name}</span>: {segment.description}
+                      </li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Problem-Solution Fit Score */}
+            {problemSolutionFit && (
+              <Alert className="border-purple-200 bg-purple-50">
+                <Target className="h-4 w-4" />
+                <AlertDescription className="space-y-2">
+                  <p className="font-semibold">Problem-Solution Fit Score: {problemSolutionFit.fitScore}%</p>
+                  <p className="text-sm">
+                    Your solution addresses {problemSolutionFit.problems?.length || 0} key problems 
+                    with {problemSolutionFit.solution?.keyFeatures?.length || 0} main features.
+                  </p>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Key Risks */}
+            {risks && risks.length > 0 && (
+              <Alert className="border-orange-200 bg-orange-50">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription className="space-y-2">
+                  <p className="font-semibold">Critical Risks to Address:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {risks
+                      .filter(risk => risk.impact === 'high')
+                      .slice(0, 3)
+                      .map((risk) => (
+                        <li key={risk.id} className="text-sm">
+                          {risk.description}
+                        </li>
+                      ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Canvas Explanation */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Understanding Your Business Canvas</CardTitle>
+            <CardDescription>
+              The canvas below synthesizes all aspects of your business model. Each section is populated 
+              based on your idea description and diagnostic answers.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              The <span className="font-medium">Lean Canvas</span> focuses on problem-solution fit and is ideal for startups. 
+              The <span className="font-medium">Business Model Canvas</span> provides a comprehensive view of how your business creates, 
+              delivers, and captures value.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Canvas Tabs */}
       <Tabs defaultValue="lean" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="lean">
@@ -240,14 +352,36 @@ export const CanvasViewer = ({ leanCanvas, businessModelCanvas }: CanvasViewerPr
         </TabsList>
 
         <TabsContent value="lean" className="mt-4">
-          <div className={isFullscreen ? 'fixed inset-0 bg-background z-50 p-8 overflow-auto' : ''}>
+          <div className={isFullscreen ? 'fixed inset-0 bg-background z-50 p-8 overflow-auto' : 'space-y-4'}>
+            {isFullscreen && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsFullscreen(false)}
+                className="mb-4"
+              >
+                <Maximize2 className="h-4 w-4 mr-2" />
+                Exit Fullscreen
+              </Button>
+            )}
             <LeanCanvasGrid canvas={leanCanvas} />
           </div>
         </TabsContent>
 
         {businessModelCanvas && (
           <TabsContent value="business" className="mt-4">
-            <div className={isFullscreen ? 'fixed inset-0 bg-background z-50 p-8 overflow-auto' : ''}>
+            <div className={isFullscreen ? 'fixed inset-0 bg-background z-50 p-8 overflow-auto' : 'space-y-4'}>
+              {isFullscreen && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsFullscreen(false)}
+                  className="mb-4"
+                >
+                  <Maximize2 className="h-4 w-4 mr-2" />
+                  Exit Fullscreen
+                </Button>
+              )}
               <BusinessCanvasGrid canvas={businessModelCanvas} />
             </div>
           </TabsContent>

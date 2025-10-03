@@ -5,20 +5,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { 
   Lightbulb, 
-  Users, 
   Target, 
   FileText, 
-  Shield, 
   ArrowRight,
   Download,
   Loader2
 } from 'lucide-react';
 import { IdeaInput } from './IdeaInput';
 import { DiagnosticQA } from './DiagnosticQA';
-import { CustomerSegmentBuilder } from './CustomerSegmentBuilder';
-import { ProblemSolutionFitAnalyzer } from './ProblemSolutionFitAnalyzer';
-import { ValuePropGenerator } from './ValuePropGenerator';
-import { RiskAssumptionLogger } from './RiskAssumptionLogger';
 import { CanvasViewer } from './CanvasViewer';
 import { OutputExporter } from './OutputExporter';
 import { useIdeaRefiner } from '@/hooks/useIdeaRefiner';
@@ -37,10 +31,6 @@ export const IdeaRefinerWorkflow = () => {
   const steps = [
     { id: 'input', label: 'Idea Input', icon: Lightbulb },
     { id: 'diagnostic', label: 'Diagnostic Q&A', icon: Target },
-    { id: 'segments', label: 'Customer Segments', icon: Users },
-    { id: 'fit', label: 'Problem-Solution Fit', icon: Target },
-    { id: 'value', label: 'Value Proposition', icon: FileText },
-    { id: 'risks', label: 'Risks & Assumptions', icon: Shield },
     { id: 'canvas', label: 'Business Canvas', icon: FileText }
   ];
 
@@ -96,7 +86,10 @@ export const IdeaRefinerWorkflow = () => {
               variant={index === activeStep ? 'default' : index < activeStep ? 'secondary' : 'outline'}
               size="sm"
               onClick={() => setActiveStep(index)}
-              disabled={index > activeStep && !output.diagnosticAnswers}
+              disabled={
+                (index === 1 && !input.ideaDescription) || // Can't go to diagnostic without idea
+                (index === 2 && (!output.diagnosticAnswers || output.diagnosticAnswers.length === 0)) // Can't go to canvas without diagnostic answers
+              }
             >
               <Icon className="h-4 w-4 mr-2" />
               {step.label}
@@ -127,58 +120,25 @@ export const IdeaRefinerWorkflow = () => {
           )}
 
           {activeStep === 2 && (
-            <CustomerSegmentBuilder
-              segments={output.customerSegments || []}
-              idealProfiles={output.idealCustomerProfiles || []}
-              onUpdate={(segments, profiles) => setOutput({ 
-                ...output, 
-                customerSegments: segments,
-                idealCustomerProfiles: profiles 
-              })}
-              onNext={handleNext}
-              onBack={handleBack}
-            />
-          )}
-
-          {activeStep === 3 && (
-            <ProblemSolutionFitAnalyzer
-              fit={output.problemSolutionFit}
-              onUpdate={(fit) => setOutput({ ...output, problemSolutionFit: fit })}
-              onNext={handleNext}
-              onBack={handleBack}
-            />
-          )}
-
-          {activeStep === 4 && (
-            <ValuePropGenerator
-              valueProposition={output.valueProposition}
-              positioning={output.positioning}
-              onUpdate={(vp, pos) => setOutput({ 
-                ...output, 
-                valueProposition: vp,
-                positioning: pos 
-              })}
-              onNext={handleNext}
-              onBack={handleBack}
-            />
-          )}
-
-          {activeStep === 5 && (
-            <RiskAssumptionLogger
-              items={output.risksAndAssumptions || []}
-              onUpdate={(items) => setOutput({ ...output, risksAndAssumptions: items })}
-              onNext={handleNext}
-              onBack={handleBack}
-            />
-          )}
-
-          {activeStep === 6 && output.leanCanvas && (
             <div className="space-y-6">
-              <CanvasViewer
-                leanCanvas={output.leanCanvas}
-                businessModelCanvas={output.businessModelCanvas}
-              />
-              <OutputExporter output={output as IdeaRefinerOutput} />
+              {output.leanCanvas ? (
+                <>
+                  <CanvasViewer
+                    leanCanvas={output.leanCanvas}
+                    businessModelCanvas={output.businessModelCanvas}
+                    customerSegments={output.customerSegments}
+                    valueProposition={output.valueProposition}
+                    risks={output.risksAndAssumptions}
+                    problemSolutionFit={output.problemSolutionFit}
+                  />
+                  <OutputExporter output={output as IdeaRefinerOutput} />
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Generating your business canvas...</p>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

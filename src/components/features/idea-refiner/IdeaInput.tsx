@@ -4,8 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Upload, X, Plus, Loader2 } from 'lucide-react';
+import { Upload, X, Plus, Loader2, AlertCircle } from 'lucide-react';
 import { IdeaRefinerInput } from '@/types/idea-refiner';
+import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface IdeaInputProps {
   value: IdeaRefinerInput;
@@ -66,8 +72,11 @@ export const IdeaInput = ({ value, onChange, onNext, isProcessing }: IdeaInputPr
             onChange={(e) => onChange({ ...value, ideaDescription: e.target.value })}
             className="min-h-[200px] mt-2"
           />
-          <p className="text-sm text-muted-foreground mt-1">
-            Minimum 50 characters required
+          <p className={cn(
+            "text-sm mt-1",
+            value.ideaDescription.length < 50 ? "text-destructive" : "text-muted-foreground"
+          )}>
+            {value.ideaDescription.length} / 50 characters (minimum required)
           </p>
         </div>
 
@@ -150,20 +159,45 @@ export const IdeaInput = ({ value, onChange, onNext, isProcessing }: IdeaInputPr
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <Button
-          onClick={onNext}
-          disabled={value.ideaDescription.length < 50 || isProcessing}
-        >
-          {isProcessing ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Analyzing...
-            </>
-          ) : (
-            'Start Analysis'
-          )}
-        </Button>
+      <div className="space-y-4">
+        {value.ideaDescription.length > 0 && value.ideaDescription.length < 50 && (
+          <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive rounded-md">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <p className="text-sm">
+              Please provide at least 50 characters to start the analysis. You need {50 - value.ideaDescription.length} more characters.
+            </p>
+          </div>
+        )}
+        
+        <div className="flex justify-end">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span tabIndex={0}>
+                <Button
+                  onClick={onNext}
+                  disabled={value.ideaDescription.length < 50 || isProcessing}
+                  className={cn(
+                    value.ideaDescription.length > 0 && value.ideaDescription.length < 50 && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    'Start Analysis'
+                  )}
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {value.ideaDescription.length < 50 && (
+              <TooltipContent>
+                <p>Enter at least 50 characters to enable analysis</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </div>
       </div>
     </div>
   );

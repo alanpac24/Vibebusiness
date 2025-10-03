@@ -2,9 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { Layout } from "./components/layouts/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import IdeaRefiner from "./pages/IdeaRefiner";
 import MarketResearch from "./pages/MarketResearch";
@@ -31,27 +32,30 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Layout>
-            <Routes>
+          <Routes>
+            {/* Public routes - no layout */}
+            <Route path="/landing" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/oauth/callback" element={<OAuthCallback />} />
-            <Route path="/" element={<Index />} />
-            <Route path="/idea-refiner" element={<IdeaRefiner />} />
-            <Route path="/market-research" element={<MarketResearch />} />
-            <Route path="/offer-design" element={<OfferDesign />} />
-            <Route path="/pricing-strategy" element={<PricingStrategy />} />
-            <Route path="/gtm-planner" element={<GTMPlanner />} />
-            <Route path="/messaging-copy" element={<MessagingCopy />} />
-            <Route path="/financials" element={<Financials />} />
-            <Route path="/risk-compliance" element={<RiskCompliance />} />
-            <Route path="/investor-one-pager" element={<InvestorOnePager />} />
-            <Route path="/runs" element={<RunsPage />} />
-            <Route path="/agents" element={<AgentsLibrary />} />
-            <Route path="/workflow/:id" element={<WorkflowDetail />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            
+            {/* Protected routes - with layout */}
+            <Route path="/" element={<Layout><Index /></Layout>} />
+            <Route path="/idea-refiner" element={<Layout><IdeaRefiner /></Layout>} />
+            <Route path="/market-research" element={<Layout><MarketResearch /></Layout>} />
+            <Route path="/offer-design" element={<Layout><OfferDesign /></Layout>} />
+            <Route path="/pricing-strategy" element={<Layout><PricingStrategy /></Layout>} />
+            <Route path="/gtm-planner" element={<Layout><GTMPlanner /></Layout>} />
+            <Route path="/messaging-copy" element={<Layout><MessagingCopy /></Layout>} />
+            <Route path="/financials" element={<Layout><Financials /></Layout>} />
+            <Route path="/risk-compliance" element={<Layout><RiskCompliance /></Layout>} />
+            <Route path="/investor-one-pager" element={<Layout><InvestorOnePager /></Layout>} />
+            <Route path="/runs" element={<Layout><RunsPage /></Layout>} />
+            <Route path="/agents" element={<Layout><AgentsLibrary /></Layout>} />
+            <Route path="/workflow/:id" element={<Layout><WorkflowDetail /></Layout>} />
+            
+            {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </Layout>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
